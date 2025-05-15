@@ -5,5 +5,7 @@
   "homeassistant": "2023.6.0",
   "iot_class": "local_polling",
   "version": "0.1.0",
-  "hacs": "integration" 
+  "hacs": {
+    "type": "integration"
+  }
 }
