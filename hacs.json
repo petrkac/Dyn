@@ -1,0 +1,17 @@
+{
+  "name": "Dyn PV Forecast",
+  "content_in_root": false,
+  "domains": ["dyn"],
+  "country": ["cz"],
+  "homeassistant": "2023.6.0",
+  "iot_class": "local_polling",
+  "startup": "auto",
+  "version": "0.1.0",
+  "zip_release": false,
+  "hacs": "integration",
+  "quality_scale": "silver",
+  "categories": ["weather", "energy"],
+  "chip": false,
+  "architecture": [],
+  "multi_arch": false
+}
