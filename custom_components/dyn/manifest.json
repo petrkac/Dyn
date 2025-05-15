@@ -1,0 +1,10 @@
+{
+  "domain": "dyn",
+  "name": "Dyn PV Forecast",
+  "version": "0.1.0",
+  "documentation": "https://github.com/petrkac/Dyn",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@petrkac"],
+  "iot_class": "local_polling"
+}
