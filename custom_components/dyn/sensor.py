@@ -40,15 +40,31 @@ class DynPVForecastSensor(Entity):
         return self._attr_extra_state_attributes
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
-    def update(self):
-        solcast_state = self.hass.states.get("sensor.solcast_pv_forecast_forecast_today")
-        if solcast_state:
-            try:
-                self._state = float(solcast_state.state)
-            except (ValueError, TypeError):
-                self._state = None
-                _LOGGER.error("Neplatný stav ze senzoru solcast: %s", solcast_state.state)
-            self._attr_extra_state_attributes = solcast_state.attributes or {}
-        else:
-            self._state = None
-            self._attr_extra_state_attributes = {}
+def update(self):
+    try:
+        today_entity = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
+        tomorrow_entity = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
+
+        if today_entity is None or tomorrow_entity is None:
+            _LOGGER.warning("One of the Solcast sensors is not available yet")
+            return
+
+        # Předpokládám, že data jsou v today_entity.state a tomorrow_entity.state jako JSON string nebo dict
+        today_data = today_entity.state
+        tomorrow_data = tomorrow_entity.state
+
+        # Pro jednoduchost přímo uložíme do atributů
+        self._state = today_data  # nebo nějaká vhodná hodnota z today_data
+
+        self._attr_extra_state_attributes = {
+            "today_forecast": today_data,
+            "tomorrow_forecast": tomorrow_data,
+            "DataCorrect": True,
+        }
+
+    except Exception as e:
+        _LOGGER.error(f"Failed to update Dyn PV Forecast sensor: {e}")
+        self._attr_extra_state_attributes = {
+            "DataCorrect": False,
+            "error": str(e),
+        }
