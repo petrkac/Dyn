@@ -17,54 +17,46 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     name = config.get("name")
-    sensor = DynPVForecastSensor(name, hass)
+    sensor = DynPVForecastSensor(hass, name)
     add_entities([sensor], True)
 
 class DynPVForecastSensor(Entity):
-    def __init__(self, name, hass):
+    def __init__(self, hass, name):
+        self._hass = hass
         self._name = name
-        self.hass = hass
         self._state = None
         self._attr_extra_state_attributes = {}
-
+    
     @property
     def name(self):
         return self._name
-
+    
     @property
     def state(self):
         return self._state
-
+    
     @property
     def extra_state_attributes(self):
         return self._attr_extra_state_attributes
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
-def update(self):
-    try:
-        today_entity = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
-        tomorrow_entity = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
+    def update(self):
+        # Příklad: získat data z jiných sensorů v HA
+        today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
+        tomorrow_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
 
-        if today_entity is None or tomorrow_entity is None:
-            _LOGGER.warning("One of the Solcast sensors is not available yet")
+        if today_sensor is None or today_sensor.state is None:
+            _LOGGER.warning("Dnešní Solcast sensor není k dispozici")
+            self._state = None
+            self._attr_extra_state_attributes = {}
             return
 
-        # Předpokládám, že data jsou v today_entity.state a tomorrow_entity.state jako JSON string nebo dict
-        today_data = today_entity.state
-        tomorrow_data = tomorrow_entity.state
+        # Pro jednoduchost použijeme jako stav hodnotu dnešního senzoru
+        self._state = today_sensor.state
 
-        # Pro jednoduchost přímo uložíme do atributů
-        self._state = today_data  # nebo nějaká vhodná hodnota z today_data
-
+        # Přidáme atributy - např. data z dnešního a zítřejšího senzoru
         self._attr_extra_state_attributes = {
-            "today_forecast": today_data,
-            "tomorrow_forecast": tomorrow_data,
+            "today": today_sensor.state,
+            "tomorrow": tomorrow_sensor.state if tomorrow_sensor else "unknown",
             "DataCorrect": True,
-        }
-
-    except Exception as e:
-        _LOGGER.error(f"Failed to update Dyn PV Forecast sensor: {e}")
-        self._attr_extra_state_attributes = {
-            "DataCorrect": False,
-            "error": str(e),
         }
