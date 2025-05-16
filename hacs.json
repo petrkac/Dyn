@@ -1,11 +1,5 @@
 {
-  "name": "Dyn PV Forecast",
-  "content_in_root": false,
-  "domains": ["dyn"],
-  "homeassistant": "2023.6.0",
-  "iot_class": "local_polling",
-  "version": "0.1.0",
-  "hacs": {
-    "type": "integration"
-  }
+    "name": "Dyn PV Forecast",
+    "render_readme": true,
+    "country": "CZ"
 }
