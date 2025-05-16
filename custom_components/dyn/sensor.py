@@ -17,15 +17,15 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     name = config.get("name")
-    sensor = DynPVForecastSensor(name)
+    sensor = DynPVForecastSensor(name, hass)
     add_entities([sensor], True)
 
 class DynPVForecastSensor(Entity):
-    def __init__(self, name):
+    def __init__(self, name, hass):
         self._name = name
+        self.hass = hass
         self._state = None
         self._attr_extra_state_attributes = {}
-        self._last_update = None
 
     @property
     def name(self):
@@ -41,19 +41,14 @@ class DynPVForecastSensor(Entity):
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
-        # Tady bude logika získání dat (API, výpočet apod.)
-        # Pro test nastavíme dummy data
-        self._state = 42.0
-        self._attr_extra_state_attributes = {
-            "DetailedForecast": [
-                {
-                    "period_start": "2025-05-15T00:00:00+02:00",
-                    "pv_estimate": 0,
-                    "pv_estimate10": 0,
-                    "pv_estimate90": 0,
-                },
-                # přidej další podle potřeby
-            ],
-            "Dayname": "Thursday",
-            "DataCorrect": True
-        }
+        solcast_state = self.hass.states.get("sensor.solcast_pv_forecast_forecast_today")
+        if solcast_state:
+            try:
+                self._state = float(solcast_state.state)
+            except (ValueError, TypeError):
+                self._state = None
+                _LOGGER.error("Neplatný stav ze senzoru solcast: %s", solcast_state.state)
+            self._attr_extra_state_attributes = solcast_state.attributes or {}
+        else:
+            self._state = None
+            self._attr_extra_state_attributes = {}
