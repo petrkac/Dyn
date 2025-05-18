@@ -74,8 +74,8 @@ class DynPVForecastSensor(Entity):
 
         if bat_sensor and dod_sensor and bat_sensor.state not in (None, "unknown") and dod_sensor.state not in (None, "unknown"):
             try:
-                soc = float(bat_sensor.state_old)
-                dod = float(dod_sensor.state_old)
+                soc = float(bat_sensor_old.state)
+                dod = float(dod_sensor_old.state)
                 new_value = round((soc - dod) / 100 * 9.6, 2)
                 self._attr_extra_state_attributes["bat_old_state"][index] = new_value
             except ValueError:
