@@ -9,7 +9,7 @@ from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
 
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=30)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=1)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional("name", default="Dyn PV Forecast"): cv.string,
@@ -58,5 +58,6 @@ class DynPVForecastSensor(Entity):
             ],
             "Dayname": "Thursday",
             "DataCorrect": True,
-            "Today total:": today_sensor
+            "Today total": today_sensor,
+            "time": now
         }
