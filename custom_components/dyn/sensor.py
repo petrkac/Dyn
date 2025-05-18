@@ -46,6 +46,24 @@ class DynPVForecastSensor(Entity):
         today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
         tomorrow_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
         now = datetime.now().isoformat()
+        # Spočítej aktuální index půlhodinového úseku
+        now2 = datetime.now()
+        index = now2.hour * 2 + (1 if now2.minute >= 30 else 0)
+
+        # Spočítej hodnotu a zapiš
+        bat_sensor = self._hass.states.get("sensor.battery_state_of_charge")
+        dod_sensor = self._hass.states.get("number.depth_of_discharge_on_grid")
+
+        if bat_sensor and dod_sensor and bat_sensor.state not in (None, "unknown") and dod_sensor.state not in (None, "unknown"):
+            try:
+                soc = float(bat_sensor.state)
+                dod = float(dod_sensor.state)
+                new_value = (soc - dod) * 9.6
+                self._attr_extra_state_attributes["bat_new_state"][index] = new_value
+            except ValueError:
+                _LOGGER.warning("Chyba při výpočtu bat_new_state")
+                }
+
         
         # Pro test nastavíme dummy data
         self._state = 42.0
@@ -93,20 +111,4 @@ class DynPVForecastSensor(Entity):
             ],
             "Cas": now,
 
-            # Spočítej aktuální index půlhodinového úseku
-            now2 = datetime.now()
-            index = now2.hour * 2 + (1 if now2.minute >= 30 else 0)
 
-            # Spočítej hodnotu a zapiš
-            bat_sensor = self._hass.states.get("sensor.battery_state_of_charge")
-            dod_sensor = self._hass.states.get("number.depth_of_discharge_on_grid")
-
-            if bat_sensor and dod_sensor and bat_sensor.state not in (None, "unknown") and dod_sensor.state not in (None, "unknown"):
-                try:
-                    soc = float(bat_sensor.state)
-                    dod = float(dod_sensor.state)
-                    new_value = (soc - dod) * 9.6
-                    self._attr_extra_state_attributes["bat_new_state"][index] = new_value
-                except ValueError:
-                    _LOGGER.warning("Chyba při výpočtu bat_new_state")
-                    }
