@@ -105,6 +105,6 @@ class DynPVForecastSensor(Entity):
         ]
         self._attr_extra_state_attributes["Bat_new_nabiji"] = [0 for _ in range(48)]
         self._attr_extra_state_attributes["Bat_Old_state"] = [0 for _ in range(48)]
-        self._attr_extra_state_attributes["Cas"] = now
+        self._attr_extra_state_attributes["Cas"] = now 
         
 
