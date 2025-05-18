@@ -70,46 +70,41 @@ class DynPVForecastSensor(Entity):
                 
 
         
-        # Pro test nastavíme dummy data
+        # Pro test nastavíme dummy stav
         self._state = 42.0
-        self._attr_extra_state_attributes = {
-            "DetailedForecast": [
-                {
-                    "period_start": "2025-05-15T00:00:00+02:00",
-                    "pv_estimate": 0,
-                    "pv_estimate10": 0,
-                    "pv_estimate90": 0,
-                },
-                # přidej další podle potřeby
-            ],
-            "Dayname": "Thursday",
-            "DataCorrect": True,
-            "Today": today_sensor,
-            "Tomorrow": tomorrow_sensor,
-            "Ohrev vody" : [
-                 0.46 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
-                 for i in range(48)
-            ],
-            "L1a2" : [
-                 0.27 
-                 for i in range(48)
-            ],
-            "Bat_Old_vybiji" : [
-                 1 if (0 <= i <= 15 or 44 <= i <= 47) else 0
-                 for i in range(48)
-            ],
-            "Bat_Old_nabiji" : [
-                 0 if (0 <= i <= 15 or 44 <= i <= 47) else 1
-                 for i in range(48)
-            ],
-            "Bat_new_nabiji" : [
-                 0 
-                 for i in range(48)
-            ],
-            "Bat_Old_state" : [
-                 0 
-                 for i in range(48)
-            ],
-            "Cas": now,
+
+        # Aktualizace atributů místo přepsání celého slovníku
+        self._attr_extra_state_attributes["DetailedForecast"] = [
+            {
+                "period_start": "2025-05-15T00:00:00+02:00",
+                "pv_estimate": 0,
+                "pv_estimate10": 0,
+                "pv_estimate90": 0,
+            },
+        ]
+        self._attr_extra_state_attributes["Dayname"] = "Thursday"
+        self._attr_extra_state_attributes["DataCorrect"] = True
+        self._attr_extra_state_attributes["Today"] = (
+            today_sensor.state if today_sensor else "unknown"
+        )
+        self._attr_extra_state_attributes["Tomorrow"] = (
+            tomorrow_sensor.state if tomorrow_sensor else "unknown"
+        )
+        self._attr_extra_state_attributes["Ohrev vody"] = [
+            0.46 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
+            for i in range(48)
+        ]
+        self._attr_extra_state_attributes["L1a2"] = [0.27 for _ in range(48)]
+        self._attr_extra_state_attributes["Bat_Old_vybiji"] = [
+            1 if (0 <= i <= 15 or 44 <= i <= 47) else 0
+            for i in range(48)
+        ]
+        self._attr_extra_state_attributes["Bat_Old_nabiji"] = [
+            0 if (0 <= i <= 15 or 44 <= i <= 47) else 1
+            for i in range(48)
+        ]
+        self._attr_extra_state_attributes["Bat_new_nabiji"] = [0 for _ in range(48)]
+        self._attr_extra_state_attributes["Bat_Old_state"] = [0 for _ in range(48)]
+        self._attr_extra_state_attributes["Cas"] = now
         }
 
