@@ -94,8 +94,8 @@ class DynPVForecastSensor(Entity):
             "Cas": now,
 
             # Spočítej aktuální index půlhodinového úseku
-            now = datetime.now()
-            index = now.hour * 2 + (1 if now.minute >= 30 else 0)
+            now2 = datetime.now()
+            index = now2.hour * 2 + (1 if now2.minute >= 30 else 0)
 
             # Spočítej hodnotu a zapiš
             bat_sensor = self._hass.states.get("sensor.battery_state_of_charge")
