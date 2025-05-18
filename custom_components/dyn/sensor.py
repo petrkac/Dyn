@@ -44,6 +44,7 @@ class DynPVForecastSensor(Entity):
     def update(self):
         # Tady bude logika získání dat (API, výpočet apod.)
         today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
+        tomorrow_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
         now = datetime.now().isoformat()
         
         # Pro test nastavíme dummy data
@@ -60,6 +61,11 @@ class DynPVForecastSensor(Entity):
             ],
             "Dayname": "Thursday",
             "DataCorrect": True,
-            "Today total": today_sensor,
+            "Today": today_sensor,
+            "Tomorrow": tomorrow_sensor,
+            "Ohrev vody" = [
+                 0.9 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
+                 for i in range(48)
+            ],
             "Cas": now
         }
