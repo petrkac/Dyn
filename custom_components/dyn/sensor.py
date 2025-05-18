@@ -63,7 +63,7 @@ class DynPVForecastSensor(Entity):
             "DataCorrect": True,
             "Today": today_sensor,
             "Tomorrow": tomorrow_sensor,
-            "Ohrev vody" = [
+            "Ohrev vody" : [
                  0.9 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
                  for i in range(48)
             ],
