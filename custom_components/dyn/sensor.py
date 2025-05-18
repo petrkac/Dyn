@@ -55,7 +55,7 @@ class DynPVForecastSensor(Entity):
         now2 = datetime.now()
         index = now2.hour * 2 + (1 if now2.minute >= 30 else 0)
 
-        # Spočítej hodnotu a zapiš
+        # Battery new - Spočítej hodnotu a zapiš
         bat_sensor = self._hass.states.get("sensor.battery_state_of_charge")
         dod_sensor = self._hass.states.get("number.depth_of_discharge_on_grid")
 
@@ -63,8 +63,21 @@ class DynPVForecastSensor(Entity):
             try:
                 soc = float(bat_sensor.state)
                 dod = float(dod_sensor.state)
-                new_value = (soc - dod) * 9.6
+                new_value = round((soc - dod) / 100 * 9.6, 2)
                 self._attr_extra_state_attributes["bat_new_state"][index] = new_value
+            except ValueError:
+                _LOGGER.warning("Chyba při výpočtu bat_new_state")
+                
+        # Battery old - Spočítej hodnotu a zapiš
+        bat_sensor_old = self._hass.states.get("sensor.battery_state_of_charge_2")
+        dod_sensor_old = self._hass.states.get("number.depth_of_discharge_on_grid_2")
+
+        if bat_sensor and dod_sensor and bat_sensor.state not in (None, "unknown") and dod_sensor.state not in (None, "unknown"):
+            try:
+                soc = float(bat_sensor.state_old)
+                dod = float(dod_sensor.state_old)
+                new_value = round((soc - dod) / 100 * 9.6, 2)
+                self._attr_extra_state_attributes["bat_old_state"][index] = new_value
             except ValueError:
                 _LOGGER.warning("Chyba při výpočtu bat_new_state")
                 
