@@ -120,4 +120,23 @@ class DynPVForecastSensor(Entity):
         self._attr_extra_state_attributes["Bat_Old_state"] = [0 for _ in range(48)]
         self._attr_extra_state_attributes["Cas"] = now 
         
+        forecast = self._attr_extra_state_attributes.get("DetailedForecast", [])
+        bat = self._attr_extra_state_attributes["bat_new_state"]
+        l1a2 = self._attr_extra_state_attributes["L1a2"]
+        ohrev = self._attr_extra_state_attributes["Ohrev vody"]
+        nabiji = self._attr_extra_state_attributes["Bat_Old_nabiji"]
+
+        # Predikce budoucího stavu baterie od aktuálního indexu dál
+        for i in range(index + 1, 48):
+            if bat[i - 1] is None:
+                break  # nemáme počáteční hodnotu
+
+            spotreba = l1a2[i]
+            ohrev_vody = ohrev[i] if nabiji[i] == 0 else 0
+            vyroba = 0.0
+
+            if i < len(forecast):
+                vyroba = forecast[i].get("pv_estimate", 0.0)
+
+            bat[i] = bat[i - 1] - spotreba - ohrev_vody + vyroba
 
