@@ -46,6 +46,11 @@ class DynPVForecastSensor(Entity):
         today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
         tomorrow_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
         now = datetime.now().isoformat()
+
+        # Inicializace pole
+        if "bat_new_state" not in self._attr_extra_state_attributes:
+            self._attr_extra_state_attributes["bat_new_state"] = [None] * 48
+
         # Spočítej aktuální index půlhodinového úseku
         now2 = datetime.now()
         index = now2.hour * 2 + (1 if now2.minute >= 30 else 0)
@@ -102,10 +107,6 @@ class DynPVForecastSensor(Entity):
                  for i in range(48)
             ],
             "Bat_Old_state" : [
-                 0 
-                 for i in range(48)
-            ],
-            "Bat_New_state" : [
                  0 
                  for i in range(48)
             ],
