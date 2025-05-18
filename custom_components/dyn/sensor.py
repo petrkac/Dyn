@@ -41,27 +41,19 @@ class DynPVForecastSensor(Entity):
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
-        # Příklad: získat data z jiných sensorů v HA
-        _LOGGER.debug("Spouštím update() pro %s", self._name)
-
-        today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
-        tomorrow_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_tomorrow")
-
-        if today_sensor is None or today_sensor.state is None:
-            _LOGGER.warning("Dnešní Solcast sensor není k dispozici")
-            self._state = None
-            self._attr_extra_state_attributes = {}
-            return
-
-        _LOGGER.debug("Získaná hodnota: %s", forecast_today)
-
-
-        # Pro jednoduchost použijeme jako stav hodnotu dnešního senzoru
-        self._state = today_sensor.state
-
-        # Přidáme atributy - např. data z dnešního a zítřejšího senzoru
+        # Tady bude logika získání dat (API, výpočet apod.)
+        # Pro test nastavíme dummy data
+        self._state = 42.0
         self._attr_extra_state_attributes = {
-            "today": today_sensor.state,
-            "tomorrow": tomorrow_sensor.state if tomorrow_sensor else "unknown",
-            "DataCorrect": True,
+            "DetailedForecast": [
+                {
+                    "period_start": "2025-05-15T00:00:00+02:00",
+                    "pv_estimate": 0,
+                    "pv_estimate10": 0,
+                    "pv_estimate90": 0,
+                },
+                # přidej další podle potřeby
+            ],
+            "Dayname": "Thursday",
+            "DataCorrect": True
         }
