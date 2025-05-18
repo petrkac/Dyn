@@ -62,7 +62,7 @@ class DynPVForecastSensor(Entity):
                 self._attr_extra_state_attributes["bat_new_state"][index] = new_value
             except ValueError:
                 _LOGGER.warning("Chyba při výpočtu bat_new_state")
-                }
+                
 
         
         # Pro test nastavíme dummy data
@@ -110,5 +110,5 @@ class DynPVForecastSensor(Entity):
                  for i in range(48)
             ],
             "Cas": now,
-
+        }
 
