@@ -42,6 +42,8 @@ class DynPVForecastSensor(Entity):
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         # Tady bude logika získání dat (API, výpočet apod.)
+        today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
+                                              
         # Pro test nastavíme dummy data
         self._state = 42.0
         self._attr_extra_state_attributes = {
@@ -55,5 +57,6 @@ class DynPVForecastSensor(Entity):
                 # přidej další podle potřeby
             ],
             "Dayname": "Thursday",
-            "DataCorrect": True
+            "DataCorrect": True,
+            "Today total:": today_sensor
         }
