@@ -64,8 +64,49 @@ class DynPVForecastSensor(Entity):
             "Today": today_sensor,
             "Tomorrow": tomorrow_sensor,
             "Ohrev vody" : [
-                 0.9 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
+                 0.46 if (10 <= i <= 15 or 30 <= i <= 45) else 0.0
                  for i in range(48)
             ],
-            "Cas": now
-        }
+            "L1a2" : [
+                 0.27 
+                 for i in range(48)
+            ],
+            "Bat_Old_vybiji" : [
+                 1 if (0 <= i <= 15 or 44 <= i <= 47) else 0
+                 for i in range(48)
+            ],
+            "Bat_Old_nabiji" : [
+                 0 if (0 <= i <= 15 or 44 <= i <= 47) else 1
+                 for i in range(48)
+            ],
+            "Bat_new_nabiji" : [
+                 0 
+                 for i in range(48)
+            ],
+            "Bat_Old_state" : [
+                 0 
+                 for i in range(48)
+            ],
+            "Bat_New_state" : [
+                 0 
+                 for i in range(48)
+            ],
+            "Cas": now,
+
+            # Spočítej aktuální index půlhodinového úseku
+            now = datetime.now()
+            index = now.hour * 2 + (1 if now.minute >= 30 else 0)
+
+            # Spočítej hodnotu a zapiš
+            bat_sensor = self._hass.states.get("sensor.battery_state_of_charge")
+            dod_sensor = self._hass.states.get("number.depth_of_discharge_on_grid")
+
+            if bat_sensor and dod_sensor and bat_sensor.state not in (None, "unknown") and dod_sensor.state not in (None, "unknown"):
+                try:
+                    soc = float(bat_sensor.state)
+                    dod = float(dod_sensor.state)
+                    new_value = (soc - dod) * 9.6
+                    self._attr_extra_state_attributes["bat_new_state"][index] = new_value
+                except ValueError:
+                    _LOGGER.warning("Chyba při výpočtu bat_new_state")
+                    }
