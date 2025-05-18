@@ -43,7 +43,6 @@ class DynPVForecastSensor(Entity):
     def update(self):
         # Tady bude logika získání dat (API, výpočet apod.)
         today_sensor = self._hass.states.get("sensor.solcast_pv_forecast_forecast_today")
-        now = datetime.now().isoformat()
         
         # Pro test nastavíme dummy data
         self._state = 42.0
@@ -59,6 +58,5 @@ class DynPVForecastSensor(Entity):
             ],
             "Dayname": "Thursday",
             "DataCorrect": True,
-            "Today total": today_sensor,
-            "Cas": now
+            "Today total": today_sensor
         }
